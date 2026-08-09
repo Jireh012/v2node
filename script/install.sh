@@ -272,13 +272,13 @@ install_v2node() {
     cd /usr/local/v2node/
 
     if  [[ -z "$version_param" ]] ; then
-        last_version=$(curl -Ls "https://api.github.com/repos/wyx2685/v2node/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/Jireh012/v2node/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 v2node 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 v2node 版本安装${plain}"
             exit 1
         fi
         echo -e "${green}检测到最新版本：${last_version}，开始安装...${plain}"
-        url="https://github.com/wyx2685/v2node/releases/download/${last_version}/v2node-linux-${arch}.zip"
+        url="https://github.com/Jireh012/v2node/releases/download/${last_version}/v2node-linux-${arch}.zip"
         curl -sL "$url" | pv -s 30M -W -N "下载进度" > /usr/local/v2node/v2node-linux.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 v2node 失败，请确保你的服务器能够下载 Github 的文件${plain}"
@@ -286,7 +286,7 @@ install_v2node() {
         fi
     else
     last_version=$version_param
-        url="https://github.com/wyx2685/v2node/releases/download/${last_version}/v2node-linux-${arch}.zip"
+        url="https://github.com/Jireh012/v2node/releases/download/${last_version}/v2node-linux-${arch}.zip"
         curl -sL "$url" | pv -s 30M -W -N "下载进度" > /usr/local/v2node/v2node-linux.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 v2node $1 失败，请确保此版本存在${plain}"
@@ -380,7 +380,7 @@ EOF
     fi
 
 
-    curl -o /usr/bin/v2node -Ls https://raw.githubusercontent.com/wyx2685/v2node/main/script/v2node.sh
+    curl -o /usr/bin/v2node -Ls https://raw.githubusercontent.com/Jireh012/v2node/main/script/v2node.sh
     chmod +x /usr/bin/v2node
 
     cd $cur_dir
@@ -403,7 +403,6 @@ EOF
     echo "v2node uninstall    - 卸载 v2node"
     echo "v2node version      - 查看 v2node 版本"
     echo "------------------------------------------"
-    curl -fsS --max-time 10 "https://api.v-50.me/counter" || true
 
     if [[ $first_install == true ]]; then
         read -rp "检测到你为第一次安装 v2node，是否自动生成 /etc/v2node/config.json？(y/n): " if_generate
