@@ -424,6 +424,7 @@ generate_v2node_config() {
         local api_host="$1"
         local node_id="$2"
         local api_key="$3"
+        local api_prefix="$4"
 
         mkdir -p /etc/v2node >/dev/null 2>&1
         cat > /etc/v2node/config.json <<EOF
@@ -438,6 +439,7 @@ generate_v2node_config() {
             "ApiHost": "${api_host}",
             "NodeID": ${node_id},
             "ApiKey": "${api_key}",
+            "ApiPrefix": "${api_prefix}",
             "Timeout": 15
         }
     ]
@@ -467,9 +469,10 @@ generate_config_file() {
     read -rp "节点ID: " node_id
     node_id=${node_id:-1}
     read -rp "节点通讯密钥: " api_key
+    read -rp "节点 API 前缀[格式: /n/xxxxxxxxxxxx]: " api_prefix
 
     # 生成配置文件（覆盖可能从包中复制的模板）
-    generate_v2node_config "$api_host" "$node_id" "$api_key"
+    generate_v2node_config "$api_host" "$node_id" "$api_key" "$api_prefix"
 }
 
 # 放开防火墙端口

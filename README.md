@@ -1,22 +1,45 @@
 # v2node
-A v2board backend base on moddified xray-core.
-一个基于修改版xray内核的V2board节点服务端。
 
-**注意： 本项目需要搭配[修改版V2board](https://github.com/wyx2685/v2board)**
+A v2board backend based on modified xray-core.  
+基于修改版 xray 内核的节点服务端（对接 Java 面板混淆节点 API）。
 
-## 软件安装
+## 面板对接（硬切换）
 
-### 一键安装
+节点只走面板配置的中性前缀，不再使用 `/api/v2/server/**` 或 `/api/v1/server/UniProxy/**`：
 
+```text
+{ApiPrefix}/{c|u|p|a|l}?e=<SM4 compact>
 ```
-wget -N https://raw.githubusercontent.com/wyx2685/v2node/master/script/install.sh && bash install.sh
+
+| 配置项 | 说明 |
+|--------|------|
+| `ApiHost` | 面板根 URL |
+| `ApiKey` | 通讯密钥（≥16）；同时用于 SM4 工作密钥派生 `SHA-256(ApiKey)[:16]` |
+| `ApiPrefix` | 与面板 `server.server_api_prefix` 一致（如 `/n/xxxxxxxxxxxx`） |
+| `NodeID` | 节点 ID |
+
+成功响应与 POST 体均为 SM4 信封 `{iv,payload}`；身份仅通过密文 query `e` 传递。
+
+## 一键安装
+
+```bash
+wget -N https://raw.githubusercontent.com/Jireh012/v2node/main/script/install.sh && bash install.sh \
+  --api-host 'https://panel.example.com' \
+  --node-id 1 \
+  --api-key '<通讯密钥>' \
+  --api-prefix '/n/xxxxxxxxxxxx'
 ```
+
+无 `--sm4-key`：SM4 由 `--api-key` 派生。
 
 ## 构建
-``` bash
+
+```bash
 GOEXPERIMENT=jsonv2 go build -v -o build_assets/v2node -trimpath -ldflags "-X 'github.com/wyx2685/v2node/cmd.version=$version' -s -w -buildid="
 ```
 
-## Stars 增长记录
+## 测试
 
-[![Stargazers over time](https://starchart.cc/wyx2685/v2node.svg?variant=adaptive)](https://starchart.cc/wyx2685/v2node)
+```bash
+go test ./common/crypt/... ./api/v2board/... ./conf/...
+```

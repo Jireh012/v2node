@@ -40,6 +40,7 @@ VERSION_ARG=""
 API_HOST_ARG=""
 NODE_ID_ARG=""
 API_KEY_ARG=""
+API_PREFIX_ARG=""
 
 parse_args() {
     while [[ $# -gt 0 ]]; do
@@ -50,8 +51,10 @@ parse_args() {
                 NODE_ID_ARG="$2"; shift 2 ;;
             --api-key)
                 API_KEY_ARG="$2"; shift 2 ;;
+            --api-prefix)
+                API_PREFIX_ARG="$2"; shift 2 ;;
             -h|--help)
-                echo "用法: $0 [版本号] [--api-host URL] [--node-id ID] [--api-key KEY]"
+                echo "用法: $0 [版本号] [--api-host URL] [--node-id ID] [--api-key KEY] [--api-prefix PREFIX]"
                 exit 0 ;;
             --*)
                 echo "未知参数: $1"; exit 1 ;;
@@ -222,6 +225,7 @@ generate_v2node_config() {
         local api_host="$1"
         local node_id="$2"
         local api_key="$3"
+        local api_prefix="$4"
 
         mkdir -p /etc/v2node >/dev/null 2>&1
         cat > /etc/v2node/config.json <<EOF
@@ -236,6 +240,7 @@ generate_v2node_config() {
             "ApiHost": "${api_host}",
             "NodeID": ${node_id},
             "ApiKey": "${api_key}",
+            "ApiPrefix": "${api_prefix}",
             "Timeout": 15
         }
     ]
@@ -349,8 +354,8 @@ EOF
 
     if [[ ! -f /etc/v2node/config.json ]]; then
         # 如果通过 CLI 传入了完整参数，则直接生成配置并跳过交互
-        if [[ -n "$API_HOST_ARG" && -n "$NODE_ID_ARG" && -n "$API_KEY_ARG" ]]; then
-            generate_v2node_config "$API_HOST_ARG" "$NODE_ID_ARG" "$API_KEY_ARG"
+        if [[ -n "$API_HOST_ARG" && -n "$NODE_ID_ARG" && -n "$API_KEY_ARG" && -n "$API_PREFIX_ARG" ]]; then
+            generate_v2node_config "$API_HOST_ARG" "$NODE_ID_ARG" "$API_KEY_ARG" "$API_PREFIX_ARG"
             echo -e "${green}已根据参数生成 /etc/v2node/config.json${plain}"
             first_install=false
         else
@@ -409,9 +414,10 @@ EOF
             read -rp "节点ID: " node_id
             node_id=${node_id:-1}
             read -rp "节点通讯密钥: " api_key
+            read -rp "节点 API 前缀[格式: /n/xxxxxxxxxxxx]: " api_prefix
 
             # 生成配置文件（覆盖可能从包中复制的模板）
-            generate_v2node_config "$api_host" "$node_id" "$api_key"
+            generate_v2node_config "$api_host" "$node_id" "$api_key" "$api_prefix"
         else
             echo "${green}已跳过自动生成配置。如需后续生成，可执行: v2node generate${plain}"
         fi

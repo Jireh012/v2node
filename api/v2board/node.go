@@ -115,13 +115,17 @@ type EncSettings struct {
 }
 
 func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
-	const path = "/api/v2/server/config"
+	e, err := c.buildE()
+	if err != nil {
+		return nil, err
+	}
 	r, err := c.client.
 		R().
 		SetContext(ctx).
 		SetHeader("If-None-Match", c.nodeEtag).
+		SetQueryParam("e", e).
 		ForceContentType("application/json").
-		Get(path)
+		Get(c.actionPath("c"))
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +136,12 @@ func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
 	if r.StatusCode() == 304 {
 		return nil, nil
 	}
-	hash := sha256.Sum256(r.Body())
+
+	plain, err := c.decryptResponseBody(r.Body())
+	if err != nil {
+		return nil, fmt.Errorf("decrypt node params error: %s", err)
+	}
+	hash := sha256.Sum256(plain)
 	newBodyHash := hex.EncodeToString(hash[:])
 	if c.responseBodyHash == newBodyHash {
 		return nil, nil
@@ -140,21 +149,12 @@ func (c *Client) GetNodeInfo(ctx context.Context) (node *NodeInfo, err error) {
 	c.responseBodyHash = newBodyHash
 	c.nodeEtag = r.Header().Get("ETag")
 
-	if r != nil {
-		defer func() {
-			if r.RawBody() != nil {
-				r.RawBody().Close()
-			}
-		}()
-	} else {
-		return nil, fmt.Errorf("received nil response")
-	}
 	node = &NodeInfo{
 		Id: c.NodeId,
 	}
 	// parse protocol params
 	cm := &CommonNode{}
-	err = json.Unmarshal(r.Body(), cm)
+	err = json.Unmarshal(plain, cm)
 	if err != nil {
 		return nil, fmt.Errorf("decode node params error: %s", err)
 	}
