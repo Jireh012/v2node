@@ -45,3 +45,14 @@
 ## Design Decision: Single canonical upstream
 
 **Decision**: Compare/merge upstream = `https://github.com/wyx2685/v2node` @ `main`. Deploy/install = this repo. Change only via explicit Trellis update.
+
+---
+
+## Merged (keep fork divergences)
+
+| Upstream commit | Notes |
+|-----------------|--------|
+| `160320c` | `cert_mode=remote`: copy panel `tls_cert`/`tls_key` to cert files |
+| `ad749f5` | xray-core **v26.7.28** (`v1.260728.0` → wyx2685/xray-core replace) |
+
+Still keep: ApiPrefix/SM4, Jireh012 `install.sh` URLs, SNI rematch for `dns`/`http`/`self` ([tls-cert.md](./tls-cert.md)). `remote` does **not** rematch SNI (PIN is frozen on the panel).

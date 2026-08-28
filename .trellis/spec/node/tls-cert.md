@@ -15,7 +15,8 @@
 | `dns` / `http` | If cert files exist **and** leaf SAN/CN covers `CertDomain` → keep. Else delete + `CreateCert`. |
 | `self` | Same domain check; regenerate self-signed when mismatch. |
 | `file` / `none` | Unchanged (operator-managed files). |
-| Renew task | Domain mismatch → re-issue; else expiry-based renew. |
+| `remote` | If cert/key **files exist** → keep (no SNI rematch). Else write panel `TlsCert`/`TlsKey` PEM (`0644` / `0600`). |
+| Renew task | Skip ACME for `none` / `file` / `self` / `remote`. `dns`/`http`: domain mismatch → re-issue; else expiry-based renew. |
 
 ### 3. Wrong vs Correct
 
@@ -41,3 +42,4 @@ if ok {
 
 - `host` may be a CDN hostname; `server_name` must be the **certificate** domain.
 - Do not set SNI equal to CDN host unless that exact name is on the issued cert.
+- `remote` does **not** rematch SNI: existing cert files stay; panel PIN is frozen until the operator clears it and re-saves.

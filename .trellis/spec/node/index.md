@@ -26,7 +26,7 @@ Panel-side contracts: sibling repo `.trellis/spec/backend/server-node.md`.
 | [Upstream](./upstream.md) | wyx2685 compare/merge vs Jireh012 deploy | Active |
 | [Panel Wire](./panel-wire.md) | ApiPrefix, actions `c\|u\|p\|a\|l`, SM4 query/body | Active |
 | [Install & Release](./install-release.md) | install.sh URLs, asset names, publish flow | Active |
-| [TLS Certificate](./tls-cert.md) | dns/http/self re-issue when SNI / CertDomain changes | Active |
+| [TLS Certificate](./tls-cert.md) | dns/http/self re-issue on SNI change; `remote` writes panel PEM | Active |
 | [Directory Structure](./directory-structure.md) | Package layout | Active |
 
 ---

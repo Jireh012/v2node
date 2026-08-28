@@ -11,7 +11,6 @@ require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/tjfoc/gmsm v1.4.1
-	github.com/vmihailenco/msgpack/v5 v5.4.1
 	github.com/xtls/xray-core v1.260728.0
 	golang.org/x/sys v0.47.0
 	google.golang.org/protobuf v1.36.12
